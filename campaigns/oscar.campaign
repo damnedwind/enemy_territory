@@ -1,0 +1,8 @@
+{
+	name		"DamnedWind (Oscar)"
+	shortname	"cmpgn_oscar"
+	description	"Bigger, better, and chock full of bolts!"
+	maps		"bergen;ROP_River;goldeneye_bunker1;1944_overlord;1944_siegfried;1944_nordwind"
+	mapTC		374 374
+	type		"wolfmp"
+}

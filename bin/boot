@@ -1,0 +1,76 @@
+#!/bin/sh
+
+DIR="/home/et"
+WWW="/www/et"
+CONF="main.cfg"
+PORT="27960"
+WHOM="et"
+THIS="$0"
+
+# Ensure we're the user we want to be.
+if [ "$USER" != "$WHOM" ]; then
+	echo "We are currently '$USER', but wish to be '$WHOM', correcting..."
+	if [ $(id -u) -eq 0 ]; then
+		su - "$WHOM" -c "$THIS"
+		exit 0
+	fi
+
+	echo "Cannot su to '$WHOM', UID is not 0."
+	exit 1
+fi
+
+echo "We are currently '$USER', as desired."
+echo
+echo
+
+# Clear out all previous instantces.
+echo "Deleting previous instances..."
+rm -rfv /tmp/et.instance.??????
+echo
+echo
+
+# Collect all our files in a flat directory, the way ET likes it.
+flat=$(mktemp -d /tmp/et.instance.XXXXXX)
+main="$flat/etmain"
+mkdir $main
+echo "Flattening directory structure into '$main'..."
+find conf maps -type f -exec cp -v {} $main \;
+echo
+echo
+
+# Package and publish our campaigns.
+echo "Autogenerating campaigns..."
+for camp in $(ls $DIR/campaigns); do
+	name=$(basename $camp .campaign)
+	tmp=$(mktemp -d /tmp/et.$name.XXXXXX)
+
+	echo "Generating campaign '$name'..."
+	cd $tmp
+	mkdir scripts
+	cp $DIR/campaigns/$camp scripts
+	zip -q $name.pk3 scripts
+
+	echo "Publishing campaign '$name'..."
+	cp -v $name.pk3 $main
+	cp -v $name.pk3 $WWW
+
+	rm -rf $tmp
+done
+echo "Finished autogenerating campaigns."
+echo
+echo
+
+echo "Booting instance in '$flat'..."
+cd $flat
+/usr/local/bin/etded-jaymod					\
+	+set com_hunkmegs	"128"				\
+	+set com_zonemegs	"48"				\
+	+set vm_game 		"0"				\
+	+set sv_pure 		"0"				\
+	+set dedicated 		"2"				\
+	+set fs_basepath	"/usr/local/lib/enemyterritory"	\
+	+set fs_homepath	"$flat"				\
+	+set sv_punkbuster 	"0"				\
+	+set ttycon		"0"				\
+	+net_port $PORT						\
+	+exec "$CONF"
