@@ -34,7 +34,12 @@ flat=$(mktemp -d /tmp/et.instance.XXXXXX)
 main="$flat/etmain"
 mkdir $main
 echo "Flattening directory structure into '$main'..."
-find conf maps -type f -exec cp -v {} $main \;
+
+for path in $(find $DIR/conf $DIR/maps -type f); do
+	file=$(basename $path)
+
+	ln -sv $path $main/$file
+done
 echo
 echo
 
