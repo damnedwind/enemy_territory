@@ -1,5 +1,5 @@
 {
-	name		"DamnedWind (Mallory)"
+	name		"Damned Wind (Mallory)"
 	shortname	"cmpgn_mallory"
 	description	"Real medics murder you so they can heal you faster!"
 	maps		"oasis;radar;fueldump;battery;railgun;goldrush"
