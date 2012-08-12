@@ -43,6 +43,12 @@ done
 echo
 echo
 
+# Insert the jaymod databases.
+echo "Importing jaymod..."
+ln -sv $DIR/jaymod $flat
+echo
+echo
+
 # Package and publish our campaigns.
 echo "Autogenerating campaigns..."
 for camp in $(ls $DIR/campaigns); do
